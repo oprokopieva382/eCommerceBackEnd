@@ -30,8 +30,17 @@ router.get("/:id", async ({ params: { id } }, res) => {
   // be sure to include its associated Products
 });
 
-router.post("/", (req, res) => {
+router.post("/", async ({ body }, res) => {
   // create a new category
+  try {
+    const newCategory = await Category.create(body);
+    newCategory
+      ? res.status(200).json(newCategory)
+      : res.status(404).json({ Error: "Can't create new category" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 router.put("/:id", (req, res) => {
