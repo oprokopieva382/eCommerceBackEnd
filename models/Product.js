@@ -50,9 +50,5 @@ Product.init(
     modelName: "product",
   }
 );
-// Define the association to Category
-Product.belongsTo(sequelize.models.Category, {
-  foreignKey: 'category_id', // Assuming 'category_id' is the foreign key in the Product model
-});
 
 module.exports = Product;
