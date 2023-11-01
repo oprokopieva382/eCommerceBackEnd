@@ -43,8 +43,22 @@ router.post("/", async ({ body }, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async ({ params: { id }, body }, res) => {
   // update a category by its `id` value
+  try {
+    // Check if the category with the specified ID exists
+    const categoryToUpdate = await Category.findByPk(id);
+    if (!categoryToUpdate) {
+      return res
+        .status(404)
+        .json({ Error: "Category with such id was not found" });
+    }
+    await categoryToUpdate.update(body);
+    res.status(200).json(categoryToUpdate);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 router.delete("/:id", (req, res) => {
