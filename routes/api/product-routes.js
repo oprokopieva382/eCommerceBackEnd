@@ -126,8 +126,20 @@ router.put("/:id", async ({ params: { id }, body }, res) => {
   }
 });
 
-router.delete("/:id", (req, res) => {
-  // delete one product by its `id` value
+router.delete("/:id", async ({ params: { id } }, res) => {
+  try {
+    const productToDelete = await Product.findByPk(id);
+    if (!productToDelete) {
+      return res
+        .status(404)
+        .json({ Error: "Category with such id was not found" });
+    }
+    await productToDelete.destroy();
+    res.status(200).json(productToDelete);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 module.exports = router;
