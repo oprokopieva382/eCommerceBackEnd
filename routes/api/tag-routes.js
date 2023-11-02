@@ -70,9 +70,19 @@ router.put("/:id", async ({ params: { id }, body }, res) => {
   }
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async ({ params: { id } }, res) => {
   // delete on tag by its `id` value
-  
+  try {
+    const tagToDelete = await Tag.findByPk(id);
+    if (!tagToDelete) {
+      return res.status(404).json({ Error: "Tag with such id was not found" });
+    }
+    await tagToDelete.destroy();
+    res.status(200).json(tagToDelete);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 module.exports = router;
