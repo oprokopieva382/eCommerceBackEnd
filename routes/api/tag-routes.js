@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async ({ params: { id }}, res) => {
+router.get("/:id", async ({ params: { id } }, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
   try {
@@ -31,8 +31,27 @@ router.get("/:id", async ({ params: { id }}, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async ({ body }, res) => {
   // create a new tag
+  try {
+    const { productIds, ...tagData } = body;
+    const newTag = await Tag.create(body);
+    // If there are associated products, create pairings in the ProductTag model
+
+    if (productIds && productIds.length) {
+      const productTagIdArray = productIds.map((product_id) => ({
+        tag_id: newTag.id,
+        product_id,
+      }));
+      await ProductTag.bulkCreate(productTagIdArray);
+    }
+    newTag
+      ? res.status(200).json(newTag)
+      : res.status(404).json({ error: "Failed to create a new tag" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 router.put("/:id", (req, res) => {
