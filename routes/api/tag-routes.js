@@ -35,7 +35,7 @@ router.post("/", async ({ body }, res) => {
   // create a new tag
   try {
     const { productIds, ...tagData } = body;
-    const newTag = await Tag.create(body);
+    const newTag = await Tag.create(tagData);
     // If there are associated products, create pairings in the ProductTag model
 
     if (productIds && productIds.length) {
